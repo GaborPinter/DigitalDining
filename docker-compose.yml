@@ -1,0 +1,19 @@
+version: "3.8"
+services:
+  backend:
+    build: .
+    container_name: digitaldining-backend
+    ports:
+      - "8080:8080"
+    volumes:
+      - "D:/korabbi Asztal mappa/MSc/4.Fel ev/Thesis Consultation I. ( Master Programme) (GKNM_INTA098)/food-drinks:/app/food-drinks"
+    environment:
+      APP_UPLOAD_DIR: /app/food-drinks
+      SPRING_DATASOURCE_URL: "jdbc:mysql://host.docker.internal:3306/digitaldining?useSSL=false&serverTimezone=Europe/Budapest&allowPublicKeyRetrieval=true&characterEncoding=UTF-8"
+      SPRING_DATASOURCE_USERNAME: "root"
+      SPRING_DATASOURCE_PASSWORD: "Katuska04Katus"
+
+      RESTAURANT_RESERVATION_OPEN_TIME: "11:00"
+      RESTAURANT_RESERVATION_CLOSE_TIME: "23:00"
+      RESTAURANT_RESERVATION_SLOT_DURATION_MINUTES: "120"
+      RESTAURANT_RESERVATION_MAX_DAYS_AHEAD: "30"

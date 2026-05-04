@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title th:text="${restaurantName} + ' - Kérdések'">Digital Dining - Kérdések</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+:root {
+	--accent: #e03e2d;
+	--accent-dark: #c73324;
+	--text: #222;
+	--muted: #666;
+	--bg: #f7f7f8;
+	--card: #ffffff;
+	--border: rgba(0, 0, 0, 0.08);
+	--shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+	--shadow-hover: 0 18px 38px rgba(0, 0, 0, 0.12);
+	--max-width: 1200px;
+	--radius: 18px;
+}
+
+html, body {
+	margin: 0;
+	padding: 0;
+	min-height: 100%;
+	background: linear-gradient(180deg, #fff 0%, var(--bg) 100%);
+	color: var(--text);
+	font-family: Inter, Roboto, system-ui, -apple-system, "Segoe UI",
+		"Helvetica Neue", Arial;
+}
+
+*, *::before, *::after {
+	box-sizing: border-box;
+}
+
+body {
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+}
+
+main {
+	flex: 1;
+	width: 100%;
+}
+
+.faq-page {
+	max-width: var(--max-width);
+	margin: 0 auto;
+	padding: 44px 20px 64px;
+}
+
+.faq-header {
+	text-align: left;
+	margin-bottom: 28px;
+}
+
+.faq-title {
+	font-size: clamp(2rem, 4vw, 3rem);
+	line-height: 1.05;
+	margin: 0;
+	font-weight: 900;
+	letter-spacing: -0.03em;
+	color: #111;
+}
+
+.faq-subtitle {
+	margin: 10px 0 0;
+	color: var(--muted);
+	font-size: 1.05rem;
+	line-height: 1.6;
+	text-align: left;
+	max-width: 100%;
+}
+
+.faq-grid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 18px;
+	align-items: start;
+}
+
+.faq-item {
+	background: var(--card);
+	border: 1px solid var(--border);
+	border-radius: var(--radius);
+	box-shadow: var(--shadow);
+	overflow: hidden;
+	transition: transform .18s ease, box-shadow .18s ease, border-color .18s
+		ease;
+}
+
+.faq-item:hover {
+	transform: translateY(-2px);
+	box-shadow: var(--shadow-hover);
+	border-color: rgba(224, 62, 45, 0.16);
+}
+
+.faq-question {
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 14px;
+	border: 0;
+	background: transparent;
+	padding: 20px 20px;
+	cursor: pointer;
+	text-align: left;
+	color: var(--text);
+	font: inherit;
+}
+
+.faq-question:focus-visible {
+	outline: 3px solid rgba(224, 62, 45, 0.25);
+	outline-offset: 2px;
+}
+
+.faq-q-text {
+	font-size: 1.04rem;
+	font-weight: 800;
+	line-height: 1.35;
+	letter-spacing: -0.01em;
+}
+
+.faq-icon {
+	flex: 0 0 auto;
+	width: 34px;
+	height: 34px;
+	border-radius: 999px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	background: rgba(224, 62, 45, 0.10);
+	color: var(--accent);
+	font-size: 1.35rem;
+	font-weight: 900;
+	line-height: 1;
+	transition: transform .18s ease, background .18s ease, color .18s ease;
+	user-select: none;
+}
+
+.faq-item.open .faq-icon {
+	background: var(--accent);
+	color: #fff;
+}
+
+.faq-answer {
+	max-height: 0;
+	overflow: hidden;
+	transition: max-height .28s ease;
+	border-top: 1px solid transparent;
+}
+
+.faq-item.open .faq-answer {
+	border-top-color: var(--border);
+}
+
+.faq-answer-inner {
+	padding: 0 20px 20px;
+	color: #444;
+	line-height: 1.7;
+	font-size: 0.98rem;
+}
+
+.faq-answer-inner p {
+	margin: 12px 0 0;
+}
+
+.faq-answer-inner strong {
+	color: #111;
+}
+
+.faq-answer-inner ul {
+	margin: 12px 0 0 18px;
+	padding: 0;
+}
+
+.faq-answer-inner li {
+	margin: 6px 0;
+}
+
+@media ( max-width : 900px) {
+	.faq-grid {
+		grid-template-columns: 1fr;
+	}
+	.faq-page {
+		padding: 28px 16px 52px;
+	}
+}
+</style>
+</head>
+<body>
+
+  <div th:replace="~{fragments/header :: siteHeader}"></div>
+
+  <main>
+    <section class="faq-page" aria-labelledby="faq-heading">
+      <header class="faq-header">
+        <h1 id="faq-heading" class="faq-title">Gyakori kérdések</h1>
+        <p class="faq-subtitle">
+          Itt összegyűjtöttük a leggyakrabban feltett kérdéseket. Kattints egy kártyára, és megjelenik a részletes válasz.
+        </p>
+      </header>
+
+      <div class="faq-grid" id="faqGrid">
+
+        <article class="faq-item">
+          <button class="faq-question" type="button" aria-expanded="false">
+            <span class="faq-q-text">Milyen gyorsan érkezik meg a rendelésem?</span>
+            <span class="faq-icon" aria-hidden="true">+</span>
+          </button>
+          <div class="faq-answer" aria-hidden="true">
+            <div class="faq-answer-inner">
+              <p>
+                A kiszállítás ideje a rendelés összetettségétől és az aktuális forgalomtól függ, de általában
+                <strong>30–60 percen belül</strong> megérkezik a rendelésed.
+              </p>
+              <p>
+                A leggyorsabb kiszolgálás érdekében csúcsidőben érdemes előre leadni a rendelést.
+              </p>
+            </div>
+          </div>
+        </article>
+
+        <article class="faq-item">
+          <button class="faq-question" type="button" aria-expanded="false">
+            <span class="faq-q-text">Van lehetőség helyben fogyasztásra is?</span>
+            <span class="faq-icon" aria-hidden="true">+</span>
+          </button>
+          <div class="faq-answer" aria-hidden="true">
+            <div class="faq-answer-inner">
+              <p>
+                Igen, az ételeket helyben is elfogyaszthatod. Kellemes, barátságos környezetben várunk,
+                akár egy gyors ebédre, akár egy nyugodtabb vacsorára érkezel.
+              </p>
+            </div>
+          </div>
+        </article>
+
+        <article class="faq-item">
+          <button class="faq-question" type="button" aria-expanded="false">
+            <span class="faq-q-text">Milyen fizetési lehetőségek vannak?</span>
+            <span class="faq-icon" aria-hidden="true">+</span>
+          </button>
+          <div class="faq-answer" aria-hidden="true">
+            <div class="faq-answer-inner">
+              <p>
+                A fizetés történhet készpénzzel és bankkártyával is. Amennyiben online fizetés is elérhető az oldaladon,
+                ide később könnyedén beillesztheted azt is.
+              </p>
+            </div>
+          </div>
+        </article>
+
+        <article class="faq-item">
+          <button class="faq-question" type="button" aria-expanded="false">
+            <span class="faq-q-text">Lehet változtatni az ételek összetevőin?</span>
+            <span class="faq-icon" aria-hidden="true">+</span>
+          </button>
+          <div class="faq-answer" aria-hidden="true">
+            <div class="faq-answer-inner">
+              <p>
+                Bizonyos ételeknél igen, például kérhetőek extra hozzávalók, kihagyható egyes alapanyagok,
+                vagy jelezheted az allergénekkel kapcsolatos igényeket.
+              </p>
+              <p>
+                Ha szeretnél, a rendelési felülethez később külön megjegyzés mezőt is hozzáadhatsz.
+              </p>
+            </div>
+          </div>
+        </article>
+
+        <article class="faq-item">
+          <button class="faq-question" type="button" aria-expanded="false">
+            <span class="faq-q-text">Mikor elérhető a napi menü?</span>
+            <span class="faq-icon" aria-hidden="true">+</span>
+          </button>
+          <div class="faq-answer" aria-hidden="true">
+            <div class="faq-answer-inner">
+              <p>
+                A napi menü általában hétköznapokon érhető el, a megadott idősávban.
+                A pontos időpontot az oldaladon tetszés szerint testre szabhatod.
+              </p>
+            </div>
+          </div>
+        </article>
+
+        <article class="faq-item">
+          <button class="faq-question" type="button" aria-expanded="false">
+            <span class="faq-q-text">Hogyan tudok rendelést leadni?</span>
+            <span class="faq-icon" aria-hidden="true">+</span>
+          </button>
+          <div class="faq-answer" aria-hidden="true">
+            <div class="faq-answer-inner">
+              <p>
+                A rendelés leadása az étlapról indulhat. Válaszd ki az ételeket, tedd a kosárba, majd a rendelési
+                folyamat végén add meg az adatokat és a szállítási módot.
+              </p>
+            </div>
+          </div>
+        </article>
+
+        <article class="faq-item">
+          <button class="faq-question" type="button" aria-expanded="false">
+            <span class="faq-q-text">Van gluténmentes vagy vegetáriánus opció?</span>
+            <span class="faq-icon" aria-hidden="true">+</span>
+          </button>
+          <div class="faq-answer" aria-hidden="true">
+            <div class="faq-answer-inner">
+              <p>
+                Igen, bizonyos ételeinkből elérhető vegetáriánus vagy allergénmentes változat is.
+                A pontos kínálat az étlap és a napi ajánlat alapján változhat.
+              </p>
+            </div>
+          </div>
+        </article>
+
+      </div>
+    </section>
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const items = document.querySelectorAll('.faq-item');
+
+      items.forEach((item) => {
+        const button = item.querySelector('.faq-question');
+        const answer = item.querySelector('.faq-answer');
+        const icon = item.querySelector('.faq-icon');
+
+        const closeItem = () => {
+          item.classList.remove('open');
+          button.setAttribute('aria-expanded', 'false');
+          answer.setAttribute('aria-hidden', 'true');
+          answer.style.maxHeight = '0px';
+          icon.textContent = '+';
+        };
+
+        const openItem = () => {
+          item.classList.add('open');
+          button.setAttribute('aria-expanded', 'true');
+          answer.setAttribute('aria-hidden', 'false');
+          answer.style.maxHeight = answer.scrollHeight + 'px';
+          icon.textContent = '−';
+        };
+
+        button.addEventListener('click', () => {
+          const isOpen = item.classList.contains('open');
+
+          if (isOpen) {
+            closeItem();
+          } else {
+            openItem();
+          }
+        });
+
+        window.addEventListener('resize', () => {
+          if (item.classList.contains('open')) {
+            answer.style.maxHeight = answer.scrollHeight + 'px';
+          }
+        });
+      });
+    });
+  </script>
+
+</body>
+</html>

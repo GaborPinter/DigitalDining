@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="hu" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Heti menü</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background: linear-gradient(180deg, #f7f7f7 0%, #ffffff 100%);
+        }
+
+        .page-hero {
+            background: linear-gradient(135deg, #111827 0%, #374151 100%);
+            color: #fff;
+            border-radius: 28px;
+            padding: 28px;
+            box-shadow: 0 20px 50px rgba(0,0,0,.12);
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border-radius: 999px;
+            padding: 8px 14px;
+            background: rgba(255,255,255,.12);
+            font-weight: 700;
+            margin-bottom: 14px;
+        }
+
+        .day-card {
+            border: 0;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 16px 35px rgba(0,0,0,.08);
+            background: #fff;
+        }
+
+        .day-card.today {
+            outline: 3px solid rgba(25,135,84,.18);
+        }
+
+        .day-head {
+            padding: 18px 20px;
+            background: linear-gradient(135deg, #fff 0%, #f8fafc 100%);
+            border-bottom: 1px solid #eef2f7;
+        }
+
+        .day-title {
+            font-weight: 800;
+            margin: 0;
+        }
+
+        .day-meta {
+            color: #6b7280;
+            font-size: .95rem;
+        }
+
+        .menu-block {
+            padding: 18px 20px 0 20px;
+        }
+
+        .menu-row {
+            display: grid;
+            grid-template-columns: 74px 1fr auto;
+            gap: 14px;
+            align-items: start;
+            padding: 14px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .menu-row:last-child {
+            border-bottom: 0;
+        }
+
+        .option-pill {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            border-radius: 16px;
+            font-weight: 800;
+            background: #111827;
+            color: #fff;
+        }
+
+        .category-label {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 999px;
+            background: #eef2ff;
+            color: #3730a3;
+            font-weight: 700;
+            font-size: .9rem;
+            margin-bottom: 8px;
+        }
+
+        .item-name {
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+
+        .item-desc {
+            color: #6b7280;
+            font-size: .95rem;
+        }
+
+        .item-price {
+            font-size: 1rem;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .actions {
+            padding: 18px 20px 22px 20px;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn-modern {
+            border-radius: 14px;
+            font-weight: 800;
+            padding: 12px 18px;
+        }
+
+        .download-btn {
+            background: #111827;
+            color: #fff;
+        }
+
+        .download-btn:hover {
+            background: #000;
+            color: #fff;
+        }
+
+        .order-btn {
+            background: #198754;
+            color: #fff;
+        }
+
+        .order-btn:hover {
+            background: #157347;
+            color: #fff;
+        }
+
+        .legend {
+            color: #6b7280;
+            font-size: .95rem;
+        }
+
+        @media (max-width: 768px) {
+            .menu-row {
+                grid-template-columns: 60px 1fr;
+            }
+
+            .item-price {
+                grid-column: 2 / 3;
+            }
+        }
+    </style>
+</head>
+<body>
+<div th:replace="fragments/header :: siteHeader"></div>
+
+<div class="container py-4 py-lg-5">
+
+    <div class="page-hero mb-4 mb-lg-5">
+        <div class="hero-badge">🍽️ Heti menü</div>
+        <h1 class="fw-bold mb-2">Napi bontásban, A/B/C opciókkal</h1>
+        <p class="mb-0 text-white-50">
+            A következő 7 nap menüje automatikusan az aktuális dátum alapján jelenik meg.
+        </p>
+    </div>
+
+    <div th:if="${weeklyMenuMessage}" class="alert alert-success" th:text="${weeklyMenuMessage}"></div>
+
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+        <div class="legend">
+            Levesből 2 opció, főételből 3 opció, desszertből 2 opció naponta.
+        </div>
+
+        <a class="btn btn-modern download-btn" th:href="@{/weekly-menu/pdf}">
+            Heti menü letöltése PDF-ben
+        </a>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-12" th:each="day : ${days}">
+            <div class="day-card" th:classappend="${day.today} ? ' today' : ''">
+                <div class="day-head">
+                    <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+                        <div>
+                            <h2 class="day-title" th:text="${day.title}">Szerdai menü</h2>
+                            <div class="day-meta" th:text="${day.dateLabel}">2026. április 22., szerda</div>
+                        </div>
+
+                        <span class="badge text-bg-success" th:if="${day.today}">Mai menü</span>
+                    </div>
+
+                    <div class="mt-2 text-muted" th:text="${day.subtitle}">Frissen készítve, napi ajánlatként összeállítva</div>
+                </div>
+
+                <div class="menu-block">
+                    <div class="category-label">🥣 Levesek</div>
+
+                    <div class="menu-row" th:each="item : ${day.soups}">
+                        <div class="option-pill" th:text="${item.optionLabel}">A</div>
+                        <div>
+                            <div class="item-name" th:text="${item.name}">Leves neve</div>
+                            <div class="item-desc" th:text="${item.description}">Leírás</div>
+                        </div>
+                        <div class="item-price" th:text="${item.price + ' Ft'}">990 Ft</div>
+                    </div>
+
+                    <div class="category-label mt-3">🍝 Főételek</div>
+
+                    <div class="menu-row" th:each="item : ${day.mains}">
+                        <div class="option-pill" th:text="${item.optionLabel}">A</div>
+                        <div>
+                            <div class="item-name" th:text="${item.name}">Főétel neve</div>
+                            <div class="item-desc" th:text="${item.description}">Leírás</div>
+                        </div>
+                        <div class="item-price" th:text="${item.price + ' Ft'}">2490 Ft</div>
+                    </div>
+
+                    <div class="category-label mt-3">🍰 Desszertek</div>
+
+                    <div class="menu-row" th:each="item : ${day.desserts}">
+                        <div class="option-pill" th:text="${item.optionLabel}">A</div>
+                        <div>
+                            <div class="item-name" th:text="${item.name}">Desszert neve</div>
+                            <div class="item-desc" th:text="${item.description}">Leírás</div>
+                        </div>
+                        <div class="item-price" th:text="${item.price + ' Ft'}">790 Ft</div>
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <form th:action="@{/weekly-menu/order/{date}(date=${day.menuDate})}" method="post" class="mt-3">
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+    <div class="row g-2">
+        <div class="col-md-4">
+            <label class="form-label fw-semibold">Leves</label>
+            <select class="form-select" name="soupOption">
+                <option value="">Nincs választás</option>
+                <option th:each="item : ${day.soups}"
+                        th:value="${item.optionLabel}"
+                        th:text="${item.optionLabel + ' · ' + item.name + ' · ' + item.price + ' Ft'}">
+                </option>
+            </select>
+        </div>
+
+        <div class="col-md-4">
+            <label class="form-label fw-semibold">Főétel</label>
+            <select class="form-select" name="mainOption">
+                <option value="">Nincs választás</option>
+                <option th:each="item : ${day.mains}"
+                        th:value="${item.optionLabel}"
+                        th:text="${item.optionLabel + ' · ' + item.name + ' · ' + item.price + ' Ft'}">
+                </option>
+            </select>
+        </div>
+
+        <div class="col-md-4">
+            <label class="form-label fw-semibold">Desszert</label>
+            <select class="form-select" name="dessertOption">
+                <option value="">Nincs választás</option>
+                <option th:each="item : ${day.desserts}"
+                        th:value="${item.optionLabel}"
+                        th:text="${item.optionLabel + ' · ' + item.name + ' · ' + item.price + ' Ft'}">
+                </option>
+            </select>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-success btn-modern mt-3">
+        Ezt a napot rendelem
+    </button>
+</form>
+
+                    <a class="btn btn-modern btn-outline-secondary" th:href="@{/menu}">
+                        Étlap/Itallap megnyitása
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

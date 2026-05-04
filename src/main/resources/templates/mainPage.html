@@ -1,0 +1,1202 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title th:text="${restaurantName} + ' - Főoldal'">Király Étterem - Főoldal</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    :root {
+      --accent: #e03e2d;
+      --hero-height: 78vh;
+      --max-content-width: 1200px;
+      --white: #ffffff;
+      --muted: #666;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: Inter, Roboto, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial;
+      background: #fff;
+      color: #222;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    .page-main {
+      width: 100%;
+      overflow-x: hidden;
+    }
+
+    /* HERO */
+    .page-main .hero {
+      width: 100vw;
+      margin-left: calc(50% - 50vw);
+      position: relative;
+      min-height: var(--hero-height);
+      height: var(--hero-height);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-size: cover;
+      background-position: center center;
+      overflow: visible;
+    }
+
+    .page-main .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(0,0,0,0.45) 10%, rgba(0,0,0,0.6) 60%);
+      z-index: 1;
+    }
+
+    .page-main .hero-inner {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      max-width: var(--max-content-width);
+      padding: 24px;
+      color: var(--white);
+    }
+
+    .page-main .hero-title {
+      font-size: clamp(2.2rem, 6vw, 4.4rem);
+      margin: 0 0 0.3rem;
+      line-height: 1;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      text-shadow: 0 6px 18px rgba(0,0,0,0.55);
+    }
+
+    .page-main .hero-sub {
+      font-size: clamp(1rem, 2.2vw, 1.6rem);
+      margin: 0 0 1.25rem;
+      opacity: 0.95;
+      text-shadow: 0 4px 12px rgba(0,0,0,0.45);
+    }
+
+    .page-main .hero-cta {
+      display: inline-block;
+      text-decoration: none;
+      background: var(--accent);
+      color: var(--white);
+      padding: 14px 28px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: clamp(1rem, 1.8vw, 1.2rem);
+      box-shadow: 0 10px 30px rgba(224,62,45,0.28);
+      transition: transform .15s ease, box-shadow .15s ease;
+    }
+
+    .page-main .hero-cta:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 14px 40px rgba(224,62,45,0.30);
+    }
+
+    .page-main .hero-separator {
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      width: 100%;
+      line-height: 0;
+      z-index: 3;
+      transform: translateY(1px);
+    }
+
+    .page-main .hero-separator svg {
+      display: block;
+      width: 100%;
+      height: 100px;
+    }
+
+    /* SPLIT SECTION */
+    .page-main .split-section {
+      max-width: var(--max-content-width);
+      margin: 0 auto;
+      padding: 48px 20px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+      align-items: start;
+    }
+
+    .page-main .split-left {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      justify-content: center;
+    }
+
+    .page-main .split-left .eyebrow {
+      font-weight: 700;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .page-main .split-left .headline {
+      font-size: clamp(1.8rem, 4.5vw, 2.6rem);
+      font-weight: 800;
+      margin: 0;
+      color: #111;
+      line-height: 1.02;
+    }
+
+    .page-main .split-left .ad-image {
+      width: 100%;
+      display: block;
+      border-radius: 10px;
+      object-fit: cover;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    }
+
+    .page-main .split-right {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 18px;
+      color: #222;
+      font-size: 1rem;
+      line-height: 1.6;
+      align-items: flex-start;
+    }
+
+    .page-main .split-right p {
+      margin: 0 0 0.4rem 0;
+    }
+
+    .page-main .split-right .more-btn {
+      display: inline-block;
+      margin-top: 8px;
+      text-decoration: none;
+      padding: 12px 20px;
+      background: var(--accent);
+      color: #fff;
+      border-radius: 8px;
+      font-weight: 700;
+      width: auto;
+      white-space: nowrap;
+    }
+
+    /* CONTACT CARD */
+    .page-main .contact-card-wrap {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      margin-top: 24px;
+      pointer-events: none;
+    }
+
+    .page-main .contact-card {
+      pointer-events: auto;
+      background: #fff;
+      border-radius: 12px;
+      padding: 22px 26px;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.18);
+      transform: translateY(0);
+      max-width: 940px;
+      width: calc(100% - 40px);
+      display: flex;
+      gap: 28px;
+      align-items: center;
+    }
+
+    .page-main .contact-left {
+      flex: 1 1 50%;
+    }
+
+    .page-main .contact-right {
+      flex: 1 1 50%;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .page-main .contact-title {
+      font-weight: 800;
+      font-size: 1.15rem;
+      margin: 0 0 6px;
+      color: #111;
+    }
+
+    .page-main .contact-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .page-main .phone-icon {
+      width: 56px;
+      height: 56px;
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      background: #000;
+      color: #fff;
+      text-decoration: none;
+    }
+
+    .page-main .phone-icon svg {
+      width: 24px;
+      height: 24px;
+      fill: #fff;
+    }
+
+    .page-main .phone-number {
+      font-size: 1.05rem;
+      color: #111;
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    .page-main .phone-desc {
+      font-size: 0.95rem;
+      color: #555;
+    }
+
+    .page-main .below-contact-spacer {
+      height: 48px;
+    }
+
+    /* FEATURES */
+    .page-main .features-wrap {
+      width: 100vw;
+      margin-left: calc(50% - 50vw);
+      position: relative;
+    }
+
+    .page-main .features-section {
+      width: 100%;
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: center center;
+      position: relative;
+      padding: 56px 18px 80px 18px;
+      overflow: visible;
+    }
+
+    .page-main .features-section::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.28);
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .page-main .features-inner {
+      position: relative;
+      z-index: 3;
+      max-width: var(--max-content-width);
+      margin: 0 auto;
+      text-align: center;
+      color: #fff;
+    }
+
+    .page-main .features-intro {
+      font-weight: 900;
+      font-size: clamp(1.6rem, 3.4vw, 2.4rem);
+      margin-bottom: 22px;
+      color: #ffffff;
+      text-shadow: 0 6px 16px rgba(0,0,0,0.55);
+    }
+
+    .page-main .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 28px;
+      align-items: start;
+      margin-top: 6px;
+    }
+
+    .page-main .feature-item {
+      padding: 8px 6px;
+      min-height: 160px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: flex-start;
+      text-align: left;
+      background: transparent;
+    }
+
+    .page-main .feature-title {
+      font-weight: 900;
+      font-size: clamp(1.4rem, 2.8vw, 1.9rem);
+      margin: 0 0 8px 0;
+      color: #ffffff;
+      line-height: 1.05;
+      text-shadow: 0 6px 18px rgba(0,0,0,0.6);
+    }
+
+    .page-main .feature-desc {
+      font-size: clamp(1.05rem, 2.2vw, 1.25rem);
+      color: #ffffff;
+      line-height: 1.6;
+      margin: 0;
+      text-shadow: 0 6px 18px rgba(0,0,0,0.55);
+    }
+
+    /* PROMO */
+    .page-main .promo-two-wrap {
+      width: 100%;
+      margin: 32px 0;
+    }
+
+    .page-main .promo-two {
+      max-width: var(--max-content-width);
+      margin: 0 auto;
+      padding: 28px 18px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+      align-items: center;
+    }
+
+    .page-main .promo-two-left {
+      text-align: left;
+      color: #111;
+    }
+
+    .page-main .promo-two-title {
+      font-size: clamp(1.8rem, 3.6vw, 2.6rem);
+      font-weight: 900;
+      margin: 0 0 14px 0;
+      color: #111;
+    }
+
+    .page-main .promo-two-desc {
+      font-size: 1.02rem;
+      line-height: 1.6;
+      color: #333;
+      margin: 0 0 8px 0;
+    }
+
+    .page-main .promo-two-note {
+      font-weight: 800;
+      color: #111;
+      margin-top: 8px;
+      font-size: 1.02rem;
+    }
+
+    .page-main .promo-two-controls {
+      margin-top: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: 100%;
+      max-width: none;
+    }
+
+    .page-main .btn-row {
+      display: flex;
+      gap: 12px;
+      width: 100%;
+    }
+
+    .page-main .promo-two-btn {
+      display: inline-block;
+      text-align: center;
+      padding: 14px 18px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 800;
+      font-size: 1rem;
+      flex: 1 1 0;
+    }
+
+    .page-main .promo-two-btn.primary {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      box-shadow: 0 10px 30px rgba(224,62,45,0.18);
+    }
+
+    .page-main .promo-two-btn.secondary {
+      background: #444;
+      color: #fff;
+      border: none;
+    }
+
+    .page-main .subscribe-wrap {
+  border: 2px dashed #999;
+  border-radius: 14px;
+  padding: 16px;
+  width: 100%;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  align-items: stretch;
+}
+
+.page-main .subscribe-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.page-main .subscribe-badge {
+  display: inline-flex;
+  align-self: flex-start;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #f3f4f6;
+  color: #111;
+  font-weight: 800;
+  font-size: 0.85rem;
+}
+
+.page-main .subscribe-text {
+  font-weight: 800;
+  color: #222;
+  white-space: normal;
+  line-height: 1.45;
+  font-size: 1rem;
+}
+
+.page-main .subscribe-note {
+  font-size: 0.92rem;
+  color: #666;
+  line-height: 1.5;
+}
+
+.page-main .subscribe-action {
+  width: 100%;
+}
+
+.page-main .subscribe-form {
+  width: 100%;
+}
+
+.page-main .subscribe-btn {
+  width: 100%;
+  padding: 13px 16px;
+  border-radius: 10px;
+  background: #111;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 800;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  border: 0;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.page-main .subscribe-login-btn {
+  background: #444;
+}
+
+.page-main .subscribe-unsubscribe-btn {
+  background: #7a1f1f;
+}
+
+    .page-main .promo-two-right {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .page-main .promo-card {
+      position: relative;
+      width: 100%;
+      max-width: 520px;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.12);
+    }
+
+    .page-main .promo-card img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+    }
+
+    .page-main .promo-card .overlay-label {
+      position: absolute;
+      left: 14px;
+      top: 14px;
+      background: rgba(0,0,0,0.65);
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-weight: 800;
+    }
+
+    .page-main .promo-card .price {
+      position: absolute;
+      right: 14px;
+      bottom: 14px;
+      background: rgba(255,255,255,0.95);
+      color: #111;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-weight: 900;
+    }
+
+    @media (max-width: 1100px) {
+      .page-main .features-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 920px) {
+      .page-main .split-section {
+        grid-template-columns: 1fr;
+      }
+
+      .page-main .contact-card {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .page-main .promo-two {
+        grid-template-columns: 1fr;
+        gap: 18px;
+        padding: 18px;
+      }
+
+      .page-main .btn-row {
+        flex-direction: row;
+        gap: 10px;
+      }
+
+      .page-main .subscribe-wrap {
+    flex-direction: column;
+    align-items: stretch;
+  }
+    }
+
+    @media (max-width: 680px) {
+      .page-main .features-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .page-main .features-section {
+        padding: 28px 12px 46px 12px;
+      }
+
+      .page-main .features-intro {
+        font-size: 1.4rem;
+      }
+
+      .page-main .feature-item {
+        min-height: auto;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .page-main .btn-row {
+        flex-direction: column;
+      }
+
+      .page-main .subscribe-wrap {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+      }
+
+      .page-main .subscribe-text {
+        white-space: normal;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+	 <!-- COOKIE CONSENT MODAL -->
+<div id="cookieConsentOverlay" class="cookie-overlay" aria-hidden="true">
+  <div class="cookie-modal" role="dialog" aria-modal="true" aria-labelledby="cookieTitle" aria-describedby="cookieDesc">
+    <div class="cookie-modal-top">
+      <div class="cookie-badge">Cookie-kezelés</div>
+      <button type="button" class="cookie-close-btn" id="cookieCloseBtn" aria-label="Modal bezárása">
+        ×
+      </button>
+    </div>
+
+    <h2 id="cookieTitle" class="cookie-title">Sütik és adatkezelés</h2>
+    <p id="cookieDesc" class="cookie-text">
+      Weboldalunk sütiket használ az oldal alapvető működéséhez, a kényelmes böngészéshez és a szolgáltatásaink
+      fejlesztéséhez. Itt kiválaszthatod, hogy mely típusokat engedélyezed és később bármikor módosíthatod a döntésedet.
+    </p>
+
+    <div id="cookieDetails" class="cookie-details" hidden>
+  <label class="cookie-option">
+    <input type="checkbox" id="cookieNecessary" checked disabled>
+    <span class="cookie-option-text">
+      <strong>Kötelező sütik:</strong>
+      <small>Az oldal alapvető működéséhez elengedhetetlenek, ezért mindig aktívak.</small>
+    </span>
+  </label>
+
+  <label class="cookie-option">
+    <input type="checkbox" id="cookieStats">
+    <span class="cookie-option-text">
+      <strong>Statisztikai sütik:</strong>
+      <small>Segítenek megérteni, hogyan használják a látogatók az oldalt.</small>
+    </span>
+  </label>
+
+  <label class="cookie-option">
+    <input type="checkbox" id="cookieMarketing">
+    <span class="cookie-option-text">
+      <strong>Marketing sütik:</strong>
+      <small>Személyre szabott tartalmak és ajánlatok megjelenítését támogatják.</small>
+    </span>
+  </label>
+</div>
+
+    <div class="cookie-actions">
+      <button type="button" class="cookie-btn secondary" id="cookieMoreBtn">További részletek</button>
+      <button type="button" class="cookie-btn reject" id="cookieRejectBtn">Elutasítás</button>
+      <button type="button" class="cookie-btn accept" id="cookieAcceptBtn">Elfogadás</button>
+      <button type="button" class="cookie-btn save" id="cookieSaveBtn">Mentés és kilépés</button>
+    </div>
+
+    <p class="cookie-note">
+      A választásod a jelenlegi munkamenetben érvényes. A beállításokat később a sütibeállításoknál újra megnyithatod.
+    </p>
+  </div>
+</div>
+
+  <!-- header -->
+  <div th:replace="~{fragments/header :: siteHeader}"></div>
+
+  <main class="page-main">
+
+    <!-- HERO -->
+    <section class="hero"
+             th:style="'background-image: linear-gradient(rgba(0,0,0,0.15), rgba(0,0,0,0.35)), url(' + @{/images/hero-dish.jpg} + ');'">
+      <div class="hero-inner" role="region" aria-labelledby="hero-heading" aria-describedby="hero-sub">
+        <h1 id="hero-heading" class="hero-title">Ha egyedi ízekre vágysz</h1>
+        <p id="hero-sub" class="hero-sub">Üdvözöljük a Digital Dining oldalán</p>
+        <a th:href="@{/menu}" class="hero-cta" role="button" aria-label="Étlap megtekintése">Étlap megtekintése</a>
+      </div>
+
+      <div class="hero-separator" aria-hidden="true">
+        <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
+          <path d="M0,10 C150,120 350,0 600,40 C850,80 1050,20 1200,100 L1200,120 L0,120 Z" fill="#ffffff"></path>
+        </svg>
+      </div>
+    </section>
+
+    <!-- SPLIT SECTION -->
+    <section class="split-section" aria-label="Bemutatkozás">
+      <div class="split-left">
+        <div>
+          <div class="eyebrow">Egy új hely, de a megszokott különleges minőség</div>
+          <h2 class="headline">Történetünk</h2>
+        </div>
+
+        <img th:src="@{/images/online-ad.jpg}" src="/images/online-ad.jpg" alt="Online reklám" class="ad-image">
+      </div>
+
+      <aside class="split-right">
+        <p>Éttermünk a modern konyhatechnológia és a klasszikus magyar gasztronómia találkozása – ahol a hagyományos ízek találkoznak a mai igényekkel. Nálunk nem a díszítésen van a hangsúly, hanem az ízeken, az alapanyagokon, és azon, hogy minden vendég elégedetten távozzon – akár helyben fogyaszt, akár otthonra rendel.</p>
+
+        <p><strong>A Digital Dining</strong> név sokak számára egyet jelent a házi ízekkel, a kiadós adagokkal, és azzal a barátságos hangulattal, amit csak kevés hely tud igazán nyújtani.</p>
+
+        <a th:href="@{/about}" class="more-btn" role="button" aria-label="Tudj meg többet a Király Étteremről">Tudj meg többet</a>
+      </aside>
+    </section>
+
+    <!-- CONTACT CARD -->
+    <div class="contact-card-wrap" aria-hidden="false">
+      <div class="contact-card" role="region" aria-label="Kapcsolat és rendelések">
+        <div class="contact-left">
+          <div class="contact-title">Rendelni szeretnél?</div>
+
+          <div class="contact-row" style="margin-top:8px;">
+            <a th:href="'tel:' + '+36300863460'" href="tel:+36300863460" class="phone-icon" aria-label="Hívás: +36 30 086 3460">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M6.6 10.8a15.05 15.05 0 0 0 6.6 6.6l1.9-1.9a1 1 0 0 1 1.04-.24c1.12.37 2.33.57 3.57.57a1 1 0 0 1 1 1v3.5a1 1 0 0 1-1 1C10.02 21 3 13.98 3 4.5A1 1 0 0 1 4 3.5H7.5a1 1 0 0 1 1 1c0 1.24.2 2.45.57 3.57a1 1 0 0 1-.24 1.04l-1.23 1.23z"/>
+              </svg>
+            </a>
+            <div>
+              <a th:href="'tel:' + '+36300863460'" href="tel:+36300863460" class="phone-number">+36 30 086 3460</a>
+              <div class="phone-desc">Hívj minket (11:00-21:00)</div>
+            </div>
+          </div>
+
+          <div class="contact-row" style="margin-top:12px;">
+            <a th:href="'tel:' + '+36302163091'" href="tel:+36302163091" class="phone-icon" aria-label="Hívás rendezvény szervezéshez: +36 30 216 3091">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M6.6 10.8a15.05 15.05 0 0 0 6.6 6.6l1.9-1.9a1 1 0 0 1 1.04-.24c1.12.37 2.33.57 3.57.57a1 1 0 0 1 1 1v3.5a1 1 0 0 1-1 1C10.02 21 3 13.98 3 4.5A1 1 0 0 1 4 3.5H7.5a1 1 0 0 1 1 1c0 1.24.2 2.45.57 3.57a1 1 0 0 1-.24 1.04l-1.23 1.23z"/>
+              </svg>
+            </a>
+            <div>
+              <a th:href="'tel:' + '+36302163091'" href="tel:+36302163091" class="phone-number">+36 30 216 3091</a>
+              <div class="phone-desc">Rendezvény szervezéshez</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="contact-right">
+          <div style="font-weight:700; color:#111;">Gyors rendelés és rendezvények</div>
+          <div style="color:#444;">Hívj minket bizalommal, munkatársaink készséggel segítenek a rendelésben és a rendezvénytervezésben.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="below-contact-spacer" aria-hidden="true"></div>
+
+    <!-- FEATURES -->
+    <div class="features-wrap" role="region" aria-label="Nálunk a következőkre számíthatsz:">
+      <section class="features-section"
+               th:style="'background-image: url(' + @{/images/cutting-board.jpg} + ');'">
+        <div class="features-inner">
+          <div class="features-intro">Nálunk a következőkre számíthatsz:</div>
+
+          <div class="features-grid">
+            <div class="feature-item">
+              <div class="feature-title">Házi ízek</div>
+              <div class="feature-desc">Olyan, mintha otthon főzték volna – csak épp nem neked kell.</div>
+            </div>
+
+            <div class="feature-item">
+              <div class="feature-title">Friss alapanyagok</div>
+              <div class="feature-desc">Minden nap friss, gondosan válogatott hozzávalókból dolgozunk.</div>
+            </div>
+
+            <div class="feature-item">
+              <div class="feature-title">Kedves kiszolgálás</div>
+              <div class="feature-desc">Nálunk vendég vagy – nem csak vásárló.</div>
+            </div>
+
+            <div class="feature-item">
+              <div class="feature-title">Gyors kiszállítás</div>
+              <div class="feature-desc">Forrón, frissen, pontosan – Győr egész területén.</div>
+            </div>
+
+            <div class="feature-item">
+              <div class="feature-title">SZÉP kártya elfogadás</div>
+              <div class="feature-desc">OTP, MBH és K&H – nálunk ezekkel is fizethetsz.</div>
+            </div>
+
+            <div class="feature-item">
+              <div class="feature-title">Napi menü hétköznap</div>
+              <div class="feature-desc">Minden hétköznap új menüajánlattal várunk 11 és 15 óra között.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- PROMO -->
+    <div class="promo-two-wrap" aria-hidden="false">
+      <div class="promo-two" role="region" aria-label="Napi menü ajánlat">
+        <div class="promo-two-left">
+          <h3 class="promo-two-title">Szereted a házias ízeket?</h3>
+
+          <p class="promo-two-desc">
+            Ha gyors, finom és laktató ebédre vágysz, nálunk jó helyen jársz! Minden nap friss napi menüvel készülünk, amit akár elvitelre vagy kiszállítással is kérhetsz.
+            Az aktuális kínálatért kövesd Facebook oldalunkat – ott mindig megtalálod az aznapi finomságokat!
+          </p>
+
+          <p class="promo-two-note">A napi menü 11:00-tól 15:00-ig érhető el!</p>
+
+          <div class="promo-two-controls" role="group" aria-label="Napi menü gombok és feliratkozás">
+            <div class="btn-row" role="group" aria-label="Napi menü gombok">
+              <a class="promo-two-btn primary" href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer">Napi menü megtekintése</a>
+              <a class="promo-two-btn secondary" th:href="@{/weekly-menu}" href="/weekly-menu">Napi menü megrendelése</a>
+            </div>
+
+            <div class="subscribe-wrap" role="region" aria-label="Heti menü hírlevél">
+  <div class="subscribe-content">
+    <div class="subscribe-badge" th:text="${isLoggedIn and weeklyMenuSubscribed} ? 'Hírlevél aktív' : 'Hírlevél'">
+      Hírlevél
+    </div>
+
+    <div class="subscribe-text"
+         th:text="${isLoggedIn and weeklyMenuSubscribed} ? 
+                  'Fel vagy iratkozva a heti menü hírlevélre. Minden héten elküldjük az aktuális menüt e-mailben.' :
+                  'Iratkozz fel, és minden héten elküldjük neked az aktuális heti menüt e-mailben.'">
+      Iratkozz fel, és minden héten elküldjük neked az aktuális heti menüt e-mailben.
+    </div>
+  </div>
+
+  <div class="subscribe-action" th:if="${isLoggedIn and weeklyMenuSubscribed}">
+    <form th:action="@{/weekly-menu/unsubscribe}" method="post" class="subscribe-form">
+      <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+      <button type="submit" class="subscribe-btn subscribe-unsubscribe-btn">Leiratkozás a hírlevélről</button>
+    </form>
+  </div>
+
+  <div class="subscribe-action" th:if="${isLoggedIn and !weeklyMenuSubscribed}">
+    <form th:action="@{/weekly-menu/subscribe}" method="post" class="subscribe-form">
+      <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+      <button type="submit" class="subscribe-btn">Feliratkozás a hírlevélre</button>
+    </form>
+  </div>
+
+  <div class="subscribe-action" th:unless="${isLoggedIn}">
+    <a class="subscribe-btn subscribe-login-btn" th:href="@{/login}">
+      Bejelentkezés a hírlevél-feliratkozáshoz
+    </a>
+  </div>
+</div>
+            
+          </div>
+        </div>
+
+        <div class="promo-two-right">
+          <article class="promo-card" aria-label="Napi menü - rántott hús">
+            <img th:src="@{/images/slice.jpg}" src="/images/slice.jpg" alt="Rántott hús - napi menü">
+            <div class="overlay-label">Napi menü</div>
+            <div class="price">2 500 Ft</div>
+          </article>
+        </div>
+      </div>
+    </div>
+
+  </main>
+  
+  <div th:replace="~{fragments/footer :: siteFooter}"></div>
+  
+  <style>
+    body.cookie-lock {
+  overflow: hidden;
+}
+
+.cookie-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(10, 10, 10, 0.68);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.cookie-overlay.show {
+  display: flex;
+}
+
+.cookie-modal {
+  width: min(720px, 100%);
+  border-radius: 24px;
+  background: linear-gradient(180deg, #ffffff 0%, #fbfbfb 100%);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  padding: 26px;
+  position: relative;
+  color: #222;
+}
+
+.cookie-modal-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 6px;
+}
+
+.cookie-badge {
+  display: inline-block;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: #f3f4f6;
+  color: #4b5563;
+  font-weight: 800;
+  font-size: 0.88rem;
+}
+
+.cookie-close-btn {
+  border: 0;
+  background: #f3f4f6;
+  color: #4b5563;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  font-size: 1.3rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background .15s ease, transform .15s ease, color .15s ease;
+}
+
+.cookie-close-btn:hover {
+  background: #e5e7eb;
+  color: #111827;
+  transform: translateY(-1px);
+}
+
+.cookie-title {
+  margin: 0 0 10px;
+  font-size: clamp(1.5rem, 3vw, 2.1rem);
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  color: #111;
+}
+
+.cookie-text {
+  margin: 0 0 18px;
+  line-height: 1.65;
+  color: #444;
+  font-size: 1rem;
+}
+
+.cookie-details {
+  background: #fafafa;
+  border: 1px solid #ececec;
+  border-radius: 16px;
+  padding: 16px 16px 6px;
+  margin-bottom: 18px;
+  line-height: 1.6;
+  color: #333;
+}
+
+.cookie-details p {
+  margin: 0 0 10px;
+}
+
+.cookie-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.cookie-btn {
+  border: 1px solid #d1d5db;
+  border-radius: 14px;
+  padding: 13px 16px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform .15s ease, box-shadow .15s ease, background-color .15s ease, border-color .15s ease, color .15s ease;
+  font-size: 0.98rem;
+  background: #f3f4f6;
+  color: #374151;
+  min-height: 48px;
+}
+
+.cookie-btn:hover {
+  transform: translateY(-2px);
+  background: #111827;
+  border-color: #111827;
+  color: #fff;
+  box-shadow: 0 10px 24px rgba(17, 24, 39, 0.12);
+}
+
+.cookie-btn.accept:hover {
+  background: #111827;
+  border-color: #111827;
+  color: #fff;
+  box-shadow: 0 12px 26px rgba(17, 24, 39, 0.14);
+}
+
+.cookie-btn.reject:hover {
+  background: #374151;
+  border-color: #374151;
+  color: #fff;
+}
+
+.cookie-btn.secondary:hover {
+  background: #6b7280;
+  border-color: #6b7280;
+  color: #fff;
+}
+
+.cookie-btn.save {
+  grid-column: 1 / -1;
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.cookie-btn.save:hover {
+  background: #0f766e;
+  border-color: #0f766e;
+  color: #fff;
+  box-shadow: 0 12px 26px rgba(15, 118, 110, 0.16);
+}
+
+.cookie-note {
+  margin: 14px 0 0;
+  font-size: 0.9rem;
+  color: #666;
+  line-height: 1.5;
+}
+
+@media (max-width: 640px) {
+  .cookie-modal {
+    padding: 20px;
+    border-radius: 18px;
+  }
+
+  .cookie-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .cookie-btn.save {
+    grid-column: auto;
+  }
+  
+  .cookie-details {
+  background: #fafafa;
+  border: 1px solid #ececec;
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 18px;
+  line-height: 1.6;
+  color: #333;
+}
+
+.cookie-option {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 12px 10px;
+  border-radius: 12px;
+  transition: background-color .15s ease;
+  cursor: pointer;
+}
+
+.cookie-option + .cookie-option {
+  margin-top: 8px;
+}
+
+.cookie-option:hover {
+  background: #f3f4f6;
+}
+
+.cookie-option input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin-top: 3px;
+  accent-color: #111827;
+  flex: 0 0 auto;
+}
+
+.cookie-option input[type="checkbox"]:disabled {
+  cursor: not-allowed;
+  opacity: 0.85;
+}
+
+.cookie-option-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cookie-option-text strong {
+  font-size: 0.98rem;
+  color: #111;
+}
+
+.cookie-option-text small {
+  font-size: 0.92rem;
+  color: #666;
+  line-height: 1.5;
+}
+}
+  </style>
+
+  <script>
+  (function () {
+    const overlay = document.getElementById('cookieConsentOverlay');
+    const acceptBtn = document.getElementById('cookieAcceptBtn');
+    const rejectBtn = document.getElementById('cookieRejectBtn');
+    const moreBtn = document.getElementById('cookieMoreBtn');
+    const saveBtn = document.getElementById('cookieSaveBtn');
+    const closeBtn = document.getElementById('cookieCloseBtn');
+
+    const details = document.getElementById('cookieDetails');
+    const necessary = document.getElementById('cookieNecessary');
+    const stats = document.getElementById('cookieStats');
+    const marketing = document.getElementById('cookieMarketing');
+
+    const STORAGE_KEY = 'cookieConsentShownThisSession';
+
+    function openModal() {
+      overlay.classList.add('show');
+      overlay.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('cookie-lock');
+    }
+
+    function closeModal() {
+      overlay.classList.remove('show');
+      overlay.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('cookie-lock');
+    }
+
+    function getConsentState() {
+      return {
+        necessary: true,
+        stats: stats.checked,
+        marketing: marketing.checked
+      };
+    }
+
+    function rememberChoice(choice, consent = getConsentState()) {
+      sessionStorage.setItem(STORAGE_KEY, choice);
+      sessionStorage.setItem('cookieConsentNecessary', 'true');
+      sessionStorage.setItem('cookieConsentStats', String(consent.stats));
+      sessionStorage.setItem('cookieConsentMarketing', String(consent.marketing));
+      closeModal();
+    }
+
+    function acceptAll() {
+      necessary.checked = true;
+      stats.checked = true;
+      marketing.checked = true;
+      rememberChoice('accepted', { necessary: true, stats: true, marketing: true });
+    }
+
+    function rejectOptional() {
+      necessary.checked = true;
+      stats.checked = false;
+      marketing.checked = false;
+      rememberChoice('rejected', { necessary: true, stats: false, marketing: false });
+    }
+
+    if (!sessionStorage.getItem(STORAGE_KEY)) {
+      openModal();
+    }
+
+    acceptBtn.addEventListener('click', acceptAll);
+
+    rejectBtn.addEventListener('click', rejectOptional);
+
+    saveBtn.addEventListener('click', function () {
+      rememberChoice(details.hidden ? 'saved-basic' : 'saved-detailed');
+    });
+
+    moreBtn.addEventListener('click', function () {
+      details.hidden = !details.hidden;
+      moreBtn.textContent = details.hidden ? 'További részletek' : 'Részletek elrejtése';
+    });
+
+    closeBtn.addEventListener('click', function () {
+      // A kötelező sütik mindig aktívak, a választhatókat az aktuális állapot szerint mentjük.
+      rememberChoice(details.hidden ? 'closed-basic' : 'closed-detailed');
+    });
+
+    overlay.addEventListener('click', function (e) {
+      if (e.target === overlay) {
+        e.preventDefault();
+      }
+    });
+
+    window.addEventListener('keydown', function (e) {
+      if (overlay.classList.contains('show') && e.key === 'Escape') {
+        e.preventDefault();
+      }
+    });
+  })();
+</script>
+
+</body>
+</html>

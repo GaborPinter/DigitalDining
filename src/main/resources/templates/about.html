@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title th:text="${restaurantName != null ? restaurantName : 'Digital Dining'} + ' - Rólunk'">Digital Dining - Rólunk</title>
+  
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+  <style>
+  :root {
+      --accent: #e03e2d;
+      --hero-height: 78vh;
+      --max-content-width: 1200px;
+      --white: #ffffff;
+      --muted: #666;
+    }
+
+    html,body { margin:0; padding:0; font-family: Inter, Roboto, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial; color:#222; background:#fff; }
+
+/* --- Hero --- */
+.hero {
+	height: 75vh; /* majdnem a teljes képernyő */
+	min-height: 420px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: white;
+	text-align: center;
+	background-size: cover;
+	background-position: center;
+	position: relative;
+}
+
+.hero::before {
+	/* sötét réteg az olvashatósághoz */
+	content: "";
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(to bottom right, rgba(0, 0, 0, 0.45),
+		rgba(0, 0, 0, 0.55));
+}
+
+.hero-content {
+	position: relative;
+	z-index: 2;
+	max-width: 1200px;
+	padding: 0 20px;
+}
+
+.hero h1 {
+	font-size: clamp(2.4rem, 6vw, 6rem);
+	margin: 0 0 0.3em;
+	line-height: 0.95;
+	letter-spacing: -1px;
+	text-transform: none;
+	font-weight: 700;
+}
+
+.hero p.lead {
+	font-size: clamp(1rem, 2.6vw, 1.6rem);
+	margin: 0;
+	opacity: 0.95;
+}
+
+/* --- Main layout: PDF left, text right --- */
+.about-section {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 24px;
+	padding: 36px;
+	align-items: start;
+}
+
+/* PDF viewer box */
+.pdf-wrapper {
+	background: #f8f8f8;
+	border: 1px solid #e2e2e2;
+	padding: 12px;
+	border-radius: 6px;
+	position: relative;
+}
+
+.pdf-controls {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 8px;
+	margin-bottom: 8px;
+}
+
+.pdf-controls .left-controls {
+	display: flex;
+	gap: 8px;
+	align-items: center;
+}
+
+.pdf-controls button {
+	padding: 6px 10px;
+	border: 1px solid #ccc;
+	background: white;
+	border-radius: 4px;
+	cursor: pointer;
+}
+
+.pdf-canvas {
+	width: 100%;
+	height: auto;
+	display: block;
+	border-radius: 4px;
+	background: #666;
+}
+
+.pdf-meta {
+	margin-left: 8px;
+	font-size: 0.95rem;
+}
+
+/* right column text */
+.about-text {
+	background: #fff;
+	padding: 18px;
+	border-radius: 6px;
+	border: 1px solid #eee;
+	color: #222;
+	line-height: 1.6;
+}
+
+.about-text h3 {
+	margin-top: 0;
+	margin-bottom: 8px;
+	font-size: 1.4rem;
+}
+
+/* --- Locations section --- */
+.locations {
+	padding: 36px;
+	display: grid;
+	gap: 20px;
+	max-width: 1200px;
+	margin: 0 auto;
+}
+
+.locations .main-title {
+	text-align: center;
+	font-size: clamp(2.2rem, 4.2vw, 3rem); /* NAGYOBB */
+	font-weight: 800;
+	margin-bottom: 6px;
+}
+
+.locations .subtitle {
+	text-align: center;
+	color: #555;
+	margin-bottom: 18px;
+	font-size: clamp(1.4rem, 2.4vw, 1.8rem); /* NAGYOBB */
+	font-weight: 600;
+}
+
+.branches {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 16px;
+	align-items: start;
+}
+
+.branch {
+	background: #fff;
+	border: 1px solid #eee;
+	border-radius: 6px;
+	overflow: hidden;
+	text-align: center;
+}
+
+.branch img {
+	width: 100%;
+	height: 220px;
+	object-fit: cover;
+	display: block;
+}
+
+.branch .caption {
+	padding: 12px;
+	font-weight: 700;
+	font-size: 1.25rem; /* NAGYOBB helyszínfelirat */
+}
+
+/* --- Testimonials (vélemények) --- */
+.testimonials {
+	max-width: 1200px;
+	margin: 24px auto 64px;
+	padding: 24px;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 24px;
+	align-items: start;
+	/* igazítás tetejére, hogy a doboz és a kép egy sorban legyenek */
+}
+
+.testimonials .section-title,
+#testimonialsTitle {
+  font-size: clamp(1.05rem, 1.8vw, 1.25rem); /* kisebb: "Ezeket mondták rólunk" */
+  font-weight: 700;
+  margin: 0 0 6px 0;
+  text-align: left;
+  color: #222;
+}
+
+/* kisebb al-cím */
+.testimonials .subtitle {
+  color: #222;
+  margin: 0 0 14px 0;
+  font-size: clamp(2.2rem, 4vw, 3.2rem); /* JÓVAL nagyobb */
+  font-weight: 800;
+  line-height: 1;
+}
+
+.test-left .controls-row,
+.test-left > div[style*="display:flex"] {
+  display: flex;
+  align-items: center; /* <-- itt történik a vertikális középre igazítás */
+  gap: 12px;
+}
+
+/* nyilak: csak a nyíl (nincs keret) */
+.test-arrow {
+  background: transparent;
+  border: none;
+  font-size: 1.9rem;
+  cursor: pointer;
+  padding: 6px 10px;
+  color: #333;
+  line-height: 1;
+}
+
+/* a véleménydoboz most automatikus magasságú (az aktuális szöveghez igazít) */
+.testimonial-box {
+	width: 100%;
+	max-width: 820px; /* lehetőség a "kijjebb húzásra" */
+	background: #fff;
+	border: 1px solid #e6e6e6;
+	box-shadow: 0 6px 18px rgba(0, 0, 0, 0.045);
+	padding: 20px;
+	text-align: left;
+	font-size: 1rem;
+	line-height: 1.6;
+	border-radius: 8px;
+	box-sizing: border-box;
+}
+
+/* név a doboz alatt balra */
+.testimonial-name {
+	margin-top: 10px;
+	font-weight: 700;
+	font-size: 1rem;
+	text-align: left;
+	color: #111;
+}
+
+/* jobb oldal: kisebb kép (kevesebb túlnyúlás), így a kép nem olyan domináns */
+.test-right {
+	position: relative;
+	overflow: hidden;
+	border-radius: 8px;
+	min-height: 260px;
+	display: block;
+}
+
+/* SMALLER kép: max-width és kisebb translateX */
+.test-right img {
+	width: 100%;
+	max-width: 520px; /* korlátozott szélesség */
+	height: 100%;
+	object-fit: cover;
+	display: block;
+	transform: translateX(-6%);
+	/* enyhe kitolás, de kisebb, ne legyen túl nagy */
+	-webkit-mask-image: linear-gradient(to left, rgba(0, 0, 0, 1) 50%,
+		rgba(0, 0, 0, 0) 100%);
+	mask-image: linear-gradient(to left, rgba(0, 0, 0, 1) 50%,
+		rgba(0, 0, 0, 0) 100%);
+	margin-left: auto; /* kép igazítása jobb oldal felé */
+}
+
+/* mobil: a kép kisebb és a layout egyoszlopos marad */
+@media ( max-width : 900px) {
+	.testimonials {
+		grid-template-columns: 1fr;
+	}
+	.test-right {
+		order: 1;
+		min-height: 220px;
+	}
+	.test-left {
+		order: 2;
+	}
+	.test-right img {
+		width: 100%;
+		max-width: none;
+		transform: translateX(0);
+		-webkit-mask-image: linear-gradient(to left, rgba(0, 0, 0, 1) 60%,
+			rgba(0, 0, 0, 0) 100%);
+		mask-image: linear-gradient(to left, rgba(0, 0, 0, 1) 60%,
+			rgba(0, 0, 0, 0) 100%);
+	}
+}
+</style>
+</head>
+<body>
+  <div th:replace="fragments/header :: siteHeader"></div>
+
+  <section class="hero"
+           th:style="'background-image: linear-gradient(rgba(0,0,0,0.25), rgba(0,0,0,0.25)), url(' + @{/images/restaurant-hero.jpg} + ');'">
+    <div class="hero-content">
+      <h1>A Digital Dining története</h1>
+      <p class="lead">Több, mint 30 év szakértelme — ízek, vendégszeretet és hagyomány modern köntösben.</p>
+    </div>
+  </section>
+  
+  <section class="about-section">
+
+    <!-- left: PDF viewer -->
+    <div class="pdf-wrapper" aria-label="PDF néző">
+      <div class="pdf-controls">
+        <div class="left-controls">
+          <button id="prevPage" title="Előző oldal">◀ Előző</button>
+          <button id="nextPage" title="Következő oldal">Következő ▶</button>
+
+          <span class="pdf-meta">Oldal: <span id="pageNum">1</span> / <span id="pageCount">--</span></span>
+
+          <button id="zoomOut" title="Kicsinyítés">−</button>
+          <button id="zoomIn" title="Nagyítás">+</button>
+        </div>
+
+        <!-- jobb oldali gomb: új lapon megnyitás (full page) -->
+        <div>
+          <a th:href="@{/pdfs/about2.pdf}" target="_blank" rel="noopener" id="openFullBtn" class="open-full" style="text-decoration:none;">
+            <button title="Megnyitás új lapon">Megnyitás teljes oldalon ↗</button>
+          </a>
+        </div>
+      </div>
+
+      <!-- canvas ahol a PDF.js kirajzol -->
+      <canvas id="pdf-canvas" class="pdf-canvas"></canvas>
+
+      <!-- alternatív (ha PDF nem elérhető) -->
+      <div id="pdf-error" style="display:none; color:#a00; margin-top:10px;">
+        Hiba a PDF betöltése közben. Kérlek helyezd el a `src/main/resources/static/pdfs/about.pdf` fájlt.
+      </div>
+    </div>
+
+    <!-- right: descriptive text -->
+    <aside class="about-text">
+      <h3>Innen indultunk</h3>
+
+      <p><strong>A Digital Diningról</strong></p>
+
+      <p>
+        Közel három évtizedes tapasztalattal a hátunk mögött indultunk el — kezdetben kis falusi vendéglőként, később
+        pedig fokozatosan bővülve váltunk a környék kedvelt találkozóhelyévé. A folyamatos fejlődés, a minőség iránti elkötelezettség
+        és a vendégeink iránti tisztelet vezérelt bennünket minden lépésben.
+      </p>
+
+      <p>
+        Az évek során kiszolgáltunk családi összejöveteleket, céges rendezvényeket és rendszeres közétkeztetési megbízásokat.
+        Kínálatunk a hagyományos ízek tiszteletben tartásával és a modern konyhatechnikák alkalmazásával születik meg.
+      </p>
+
+      <p>
+        Ma már fiatalos, barátságos helyszínnel és elkötelezett csapattal várjuk vendégeinket — mindennap azon dolgozunk, hogy
+        a nálunk eltöltött idő emlékezetes legyen.
+      </p>
+
+      <p><em>Szeretettel várunk régi és új vendégeinket — A Digital Dining csapata</em></p>
+    </aside>
+  </section>
+  
+  <section class="locations" aria-labelledby="locationsTitle">
+    <div>
+      <div id="locationsTitle" class="main-title">Itt is találkozhatsz velünk</div>
+      <div class="subtitle">További éttermeink</div>
+    </div>
+
+    <div class="branches">
+      <div class="branch">
+        <img th:src="@{/images/branch-gyor.jpg}" src="/images/branch-gyor.jpg" alt="Kép: étterem Győr">
+        <div class="caption">Tatabánya</div>
+      </div>
+
+      <div class="branch">
+        <img th:src="@{/images/branch-pannonhalma.jpg}" src="/images/branch-pannonhalma.jpg" alt="Kép: étterem Pannonhalma">
+        <div class="caption">Budapest</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- --- ÚJ: Vélemények szekció --- -->
+  <section class="testimonials" aria-labelledby="testimonialsTitle">
+  <div style="grid-column: 1 / -1; margin-bottom: 6px;">
+    <h2 id="testimonialsTitle" class="section-title">Ezeket mondták rólunk</h2>
+  </div>
+
+  <div class="test-left" aria-hidden="false">
+    <p class="subtitle">Véleményeink</p>
+
+    <div style="display:flex; align-items:center; gap:12px;">
+      <button class="test-arrow" id="prevTest" aria-label="Előző vélemény">◀</button>
+
+      <div style="flex:1;">
+        <div class="testimonial-box" id="testimonialBox" role="region" aria-live="polite" aria-atomic="true">
+          <p class="testimonial-quote" id="testimonialText">
+            A kiszolgálás figyelmes, az ételek pedig hibátlanok. Először csak kipróbálni akartuk, de azóta heti rendszerességgel rendelünk tőlük. Az étlap változatos, a napi menü pedig mindig jó választás. Egyszer kicsit késve érkezett a rendelés, de azonnal felhívtak és elnézést kértek – ilyen hozzáállással ritkán találkozom manapság.
+          </p>
+        </div>
+        <div class="testimonial-name" id="testimonialName">Miklós</div>
+      </div>
+
+      <button class="test-arrow" id="nextTest" aria-label="Következő vélemény">▶</button>
+    </div>
+  </div>
+
+  <div class="test-right" role="img" aria-label="Vendég, aki eszik">
+    <img th:src="@{/images/testimonial-person.jpg}" src="/images/testimonial-person.jpg" alt="Vendég ételt eszik — testimonial kép">
+  </div>
+</section>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+  <script>
+    // PDF.js beállítás
+    const pdfUrl = /*[[${'/pdfs/about2.pdf'}]]*/ '/pdfs/about2.pdf'; // Thymeleaf kifejezés fallbackként
+    // ha Thymeleaf feldolgozza, akkor a sor így is működik: th:inline="javascript" + használat.
+  </script>
+
+  <!-- PDF viewer logic -->
+  <script th:inline="javascript">
+    /*<![CDATA[*/
+    // PDF.js worker src (CDN)
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+
+    const url = /*[[${@environment.getProperty('pdf.about2.path', '/pdfs/about2.pdf')}]]*/ '/pdfs/about2.pdf';
+    let pdfDoc = null,
+        pageNum = 1,
+        scale = 1.0,
+        canvas = document.getElementById('pdf-canvas'),
+        ctx = canvas.getContext('2d');
+
+    const pageNumElem = document.getElementById('pageNum');
+    const pageCountElem = document.getElementById('pageCount');
+    const prevBtn = document.getElementById('prevPage');
+    const nextBtn = document.getElementById('nextPage');
+    const zoomInBtn = document.getElementById('zoomIn');
+    const zoomOutBtn = document.getElementById('zoomOut');
+    const pdfError = document.getElementById('pdf-error');
+
+    function renderPage(num) {
+      pdfDoc.getPage(num).then(function(page) {
+        const viewport = page.getViewport({ scale: scale });
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        const renderContext = {
+          canvasContext: ctx,
+          viewport: viewport
+        };
+        page.render(renderContext);
+        pageNumElem.textContent = num;
+      });
+    }
+
+    function queueRenderPage(num) {
+      if (num < 1 || num > pdfDoc.numPages) return;
+      pageNum = num;
+      renderPage(pageNum);
+    }
+
+    // events
+    prevBtn.addEventListener('click', function() {
+      if (pageNum <= 1) return;
+      queueRenderPage(pageNum - 1);
+    });
+    nextBtn.addEventListener('click', function() {
+      if (pageNum >= pdfDoc.numPages) return;
+      queueRenderPage(pageNum + 1);
+    });
+    zoomInBtn.addEventListener('click', function() {
+      scale = (scale + 0.25) > 3 ? 3 : (scale + 0.25);
+      renderPage(pageNum);
+    });
+    zoomOutBtn.addEventListener('click', function() {
+      scale = (scale - 0.25) < 0.5 ? 0.5 : (scale - 0.25);
+      renderPage(pageNum);
+    });
+
+    // betöltés
+    const loadingTask = pdfjsLib.getDocument(url);
+    loadingTask.promise.then(function(pdf) {
+      pdfDoc = pdf;
+      pageCountElem.textContent = pdfDoc.numPages;
+      renderPage(pageNum);
+    }).catch(function (err) {
+      console.error('PDF betöltési hiba:', err);
+      pdfError.style.display = 'block';
+      pdfError.textContent = 'Hiba a PDF betöltésekor: ' + (err && err.message ? err.message : 'ismeretlen hiba');
+    });
+    /*]]>*/
+  </script>
+
+  <!-- Testimonials JS -->
+  <script>
+    (function() {
+      // Vélemények listája (a beküldött szövegek alapján)
+      const testimonials = [
+        {
+          text: "A kiszolgálás figyelmes, az ételek pedig hibátlanok. Először csak kipróbálni akartuk, de azóta heti rendszerességgel rendelünk tőlük. Az étlap változatos, a napi menü pedig mindig jó választás. Egyszer kicsit késve érkezett a rendelés, de azonnal felhívtak és elnézést kértek – ilyen hozzáállással ritkán találkozom manapság.",
+          name: "Miklós"
+        },
+        {
+          text: "Végre egy hely Győrben, ahol tényleg házias az ízvilág! Több helyről rendeltem már ebédet, de vagy íztelen volt, vagy hidegen hozták ki. Minden alkalommal forrón, frissen érkezik az étel, és tényleg olyan, mintha otthon főzték volna. Az adag bőséges, az ízek pedig fantasztikusak.",
+          name: "Andrea"
+        },
+        {
+          text: "A napi menü igazi életmentő – gyors, finom, megfizethető. Dolgozóként nekem nagyon fontos, hogy időre, megbízhatóan érkezzen az ebédem, és ne is kelljen sokat fizetni érte. A Király Győr minden szempontból hozza a maximumot: a napi menü mindig friss, laktató és soha nem volt még olyan, hogy ne lettem volna elégedett vele. Már az irodában is mindenki tőlük rendel.",
+          name: "Erika"
+        }
+      ];
+
+      let idx = 0;
+      const textEl = document.getElementById('testimonialText');
+      const nameEl = document.getElementById('testimonialName');
+      const prevBtn = document.getElementById('prevTest');
+      const nextBtn = document.getElementById('nextTest');
+
+      function showTest(i) {
+        const t = testimonials[i];
+        // finom fade
+        const box = document.getElementById('testimonialBox');
+        box.style.opacity = 0;
+        setTimeout(() => {
+          textEl.textContent = t.text;
+          nameEl.textContent = t.name;
+          box.style.opacity = 1;
+        }, 200);
+      }
+
+      prevBtn.addEventListener('click', function() {
+        idx = (idx - 1 + testimonials.length) % testimonials.length;
+        showTest(idx);
+      });
+      nextBtn.addEventListener('click', function() {
+        idx = (idx + 1) % testimonials.length;
+        showTest(idx);
+      });
+
+      // automata váltás (opcionális: kommenteld ki, ha nem kell)
+      // let auto = setInterval(() => { nextBtn.click(); }, 8000);
+      // box hover stop
+      // document.getElementById('testimonialBox').addEventListener('mouseenter', () => clearInterval(auto));
+
+      // init
+      showTest(idx);
+    })();
+  </script>
+  
+  <div th:replace="~{fragments/footer :: siteFooter}"></div>
+  
+</body>
+</html>

@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profil</title>
+  <style>
+    :root {
+      --text: #232323;
+      --muted: #666;
+      --accent: #d83a2e;
+      --accent-soft: #f6d2ce;
+      --border: rgba(0,0,0,.08);
+      --card: rgba(255,255,255,.94);
+      --card-2: #fff7f6;
+      --shadow: 0 28px 80px rgba(0,0,0,.10);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(circle at top, rgba(216,58,46,.10), transparent 30%),
+        linear-gradient(180deg, #fffdfd 0%, #f7f3f2 100%);
+      color: var(--text);
+    }
+
+    .page {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+
+    .card {
+      width: min(760px, 100%);
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      backdrop-filter: blur(8px);
+    }
+
+    .card-top {
+      padding: 28px;
+      background:
+        linear-gradient(180deg, rgba(216,58,46,.08), rgba(255,255,255,.12)),
+        linear-gradient(135deg, #fff7f6 0%, #fffdfd 100%);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .card-top h1 {
+      margin: 0;
+      font-size: 1.9rem;
+      color: #1f1f1f;
+    }
+
+    .card-top p {
+      margin: 8px 0 0;
+      color: var(--muted);
+    }
+
+    .card-body {
+      padding: 28px;
+      display: grid;
+      gap: 14px;
+      background: linear-gradient(180deg, #ffffff 0%, #fffafa 100%);
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      gap: 12px;
+      align-items: center;
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: #ffffff;
+      border: 1px solid rgba(0,0,0,.08);
+    }
+
+    .label {
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .value {
+      font-weight: 700;
+      color: #222;
+      word-break: break-word;
+    }
+
+    .role {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      width: fit-content;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(216,58,46,.08);
+      border: 1px solid rgba(216,58,46,.18);
+      color: #b92d21;
+      font-weight: 800;
+    }
+
+    .actions {
+      margin-top: 8px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 13px 16px;
+      border-radius: 14px;
+      text-decoration: none;
+      font-weight: 800;
+      border: 0;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: linear-gradient(180deg, #ea4b3d 0%, #c92619 100%);
+      color: #fff;
+      box-shadow: 0 14px 30px rgba(216,58,46,.18);
+    }
+
+    .btn-secondary {
+      background: #ffffff;
+      color: #b92d21;
+      border: 1px solid rgba(185,45,33,.18);
+    }
+
+    .btn-primary:hover,
+    .btn-secondary:hover {
+      filter: brightness(1.02);
+      transform: translateY(-1px);
+    }
+
+    @media (max-width: 640px) {
+      .row {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    .orders-section {
+  margin-top: 24px;
+}
+
+.orders-title {
+  font-size: 1.4rem;
+  margin-bottom: 12px;
+  font-weight: 800;
+}
+
+.orders-list {
+  display: grid;
+  gap: 14px;
+}
+
+.order-card {
+  border-radius: 18px;
+  padding: 16px;
+  background: linear-gradient(180deg, #ffffff, #fff6f5);
+  border: 1px solid rgba(0,0,0,.08);
+  box-shadow: 0 10px 30px rgba(0,0,0,.06);
+}
+
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.order-number {
+  font-weight: 800;
+  font-size: 1rem;
+}
+
+.order-date {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.order-status {
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  background: rgba(216,58,46,.08);
+  color: #b92d21;
+}
+
+.order-items {
+  display: grid;
+  gap: 6px;
+  margin: 10px 0;
+}
+
+.order-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+}
+
+.order-footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  font-size: 0.95rem;
+}
+
+.status-pending {
+  background: rgba(255, 193, 7, .12);
+  color: #9a6b00;
+}
+
+.status-paid {
+  background: rgba(40, 167, 69, .12);
+  color: #1f7a35;
+}
+
+.status-cancelled {
+  background: rgba(220, 53, 69, .12);
+  color: #b32635;
+}
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="card">
+      <div class="card-top">
+        <h1>Profilom</h1>
+        <p>A belépett felhasználó adatai</p>
+      </div>
+
+      <div class="card-body" th:if="${currentUser != null}">
+        <div class="row">
+          <div class="label">Felhasználónév</div>
+          <div class="value" th:text="${currentUser.username}">username</div>
+        </div>
+
+        <div class="row">
+          <div class="label">Email</div>
+          <div class="value" th:text="${currentUser.email}">email</div>
+        </div>
+
+        <div class="row">
+  			<div class="label">Szerepkör</div>
+  			<div class="value">
+    			<span class="role" th:text="${currentUser.roleDisplayName != null ? currentUser.roleDisplayName : '-'}">Felhasználó</span>
+  			</div>
+		</div>
+
+        <div class="row">
+          <div class="label">Azonosító</div>
+          <div class="value" th:text="${currentUser.id}">1</div>
+        </div>
+        
+        <div class="orders-section" th:if="${orders != null and !orders.isEmpty()}">
+  <h2 class="orders-title">Korábbi rendeléseim</h2>
+
+  <div class="orders-list">
+    <div class="order-card" th:each="order : ${orders}">
+      
+      <div class="order-header">
+        <div>
+          <div class="order-number" th:text="${order.orderNumber}">ORD-123</div>
+          <div class="order-date"
+               th:text="${#temporals.format(order.createdAt, 'yyyy.MM.dd HH:mm')}">
+            2026.01.01
+          </div>
+        </div>
+
+        <div class="order-status"
+     			th:classappend="${order.status == T(com.DigitalDining.demo.model.OrderStatus).PAID} ? ' status-paid' : 
+                     (${order.status == T(com.DigitalDining.demo.model.OrderStatus).CANCELLED} ? ' status-cancelled' : ' status-pending')"
+     			th:text="${order.status != null ? order.status.displayName : '-'}">
+  			Függőben
+		</div>
+      </div>
+
+      <div class="order-items">
+        <div class="order-item" th:each="item : ${order.items}">
+          <span th:text="${item.itemName}">Pizza</span>
+          <span th:text="${item.quantity + ' db'}">1 db</span>
+        </div>
+      </div>
+
+      <div class="order-footer">
+        <span>Összeg:</span>
+        <strong th:text="${order.totalAmount + ' Ft'}">3000 Ft</strong>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div th:if="${orders == null or orders.isEmpty()}">
+  <h2 class="orders-title">Korábbi rendeléseim</h2>
+  <p style="color:#666;">Még nincs rendelésed.</p>
+</div>
+
+        <div class="actions">
+          <a th:href="@{/}" class="btn btn-secondary">Vissza a főoldalra</a>
+          <form th:action="@{/auth/do-logout}" method="post" style="margin:0;">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+            <button type="submit" class="btn btn-primary">Kijelentkezés</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="card-body" th:if="${currentUser == null}">
+        <p style="color:#b92d21; margin:0;">Nincs bejelentkezett felhasználó.</p>
+        <div class="actions">
+          <a th:href="@{/auth/login}" class="btn btn-primary">Bejelentkezés</a>
+          <a th:href="@{/}" class="btn btn-secondary">Főoldal</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

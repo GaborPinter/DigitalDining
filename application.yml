@@ -1,0 +1,12 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/digitaldining?useSSL=false&serverTimezone=Europe/Budapest&allowPublicKeyRetrieval=true&characterEncoding=UTF-8
+    username: root
+    password: Katuska04Katus
+
+restaurant:
+  reservation:
+    open-time: 11:00
+    close-time: 23:00
+    slot-duration-minutes: 120
+    max-days-ahead: 30

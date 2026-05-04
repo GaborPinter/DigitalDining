@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="hu" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Rendelés sikeres</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(180deg, #f7f8fa 0%, #ffffff 100%);
+      color: #1f2937;
+    }
+
+    .success-card {
+      border: 0;
+      border-radius: 24px;
+      overflow: hidden;
+    }
+
+    .success-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: #eef2f7;
+      color: #334155;
+      font-weight: 600;
+      font-size: 0.95rem;
+      border: 1px solid #dbe3ec;
+    }
+
+    .order-number {
+      letter-spacing: 0.5px;
+    }
+
+    .item-box {
+      border-radius: 16px;
+      border: 1px solid #e5e7eb;
+      background: #fff;
+      box-shadow: 0 1px 2px rgba(0,0,0,.03);
+    }
+
+    .summary-box {
+      border-radius: 18px;
+      background: #f8fafc;
+      border: 1px solid #e5e7eb;
+    }
+
+    .total-box {
+      border-radius: 18px;
+      background: linear-gradient(180deg, #f9fafb 0%, #eef2f7 100%);
+      border: 1px solid #dbe3ec;
+    }
+
+    .btn-soft-primary {
+      background: #1f2937;
+      border-color: #1f2937;
+      color: #fff;
+    }
+
+    .btn-soft-primary:hover {
+      background: #111827;
+      border-color: #111827;
+      color: #fff;
+    }
+
+    .btn-soft-secondary {
+      background: #fff;
+      border: 1px solid #cbd5e1;
+      color: #334155;
+    }
+
+    .btn-soft-secondary:hover {
+      background: #f8fafc;
+      border-color: #94a3b8;
+      color: #0f172a;
+    }
+
+    .section-title {
+      font-weight: 700;
+      color: #0f172a;
+    }
+  </style>
+</head>
+<body>
+<div th:replace="fragments/header :: siteHeader"></div>
+
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-9">
+      <div class="card shadow-sm success-card">
+        <div class="card-body p-4 p-md-5">
+          <div class="success-badge mb-3">✔ Rendelés sikeresen leadva</div>
+
+          <h1 class="mb-2 section-title">Köszönjük a rendelést!</h1>
+          <p class="text-muted mb-4">
+            Rendelésszám:
+            <strong class="order-number" th:text="${order.orderNumber}">ORD-XXXX</strong>
+          </p>
+
+          <div class="row g-3 mb-4">
+            <div class="col-md-6">
+              <div class="p-3 item-box h-100">
+                <div class="mb-2"><strong>Név:</strong> <span th:text="${order.fullName}">Név</span></div>
+                <div class="mb-2">
+                  <strong>Telefonszám:</strong>
+                  <span id="orderPhone" th:text="${order.phone}">+36705648321</span>
+                </div>
+                <div class="mb-2"><strong>Email:</strong> <span th:text="${order.email}">Email</span></div>
+                <div class="mb-2">
+  					<strong>Fizetés:</strong>
+  					<span th:text="${order.paymentMethod != null ? order.paymentMethod.displayName : '-'}">Bankkártya</span>
+				</div>
+				<div>
+  					<strong>Állapot:</strong>
+  					<span th:text="${order.status != null ? order.status.displayName : '-'}">Függőben</span>
+				</div>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="p-3 item-box h-100">
+                <div class="mb-2">
+  					<strong>Átvétel:</strong>
+  					<span th:text="${order.deliveryType != null ? order.deliveryType.displayName : '-'}">Elvitel</span>
+				</div>
+                <div class="mb-2" th:if="${order.address != null}">
+                  <strong>Cím:</strong> <span th:text="${order.address}">Cím</span>
+                </div>
+                <div th:if="${order.desiredTime != null}">
+                  <strong>Kért idő:</strong> <span th:text="${order.desiredTime}">18:30</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <h5 class="mb-3 section-title">Tételek</h5>
+          <div class="list-group mb-4">
+            <div class="list-group-item py-3" th:each="item : ${order.items}">
+              <div class="d-flex justify-content-between align-items-center gap-3">
+                <div>
+                  <div class="fw-semibold" th:text="${item.itemName}">Étel</div>
+                  <div class="small text-muted" th:text="'x ' + ${item.quantity}">x 1</div>
+                </div>
+                <div class="text-end">
+                  <div class="fw-semibold" th:text="${item.unitPrice} + ' Ft / db'">0 Ft / db</div>
+                  <div class="small text-muted" th:text="${item.lineTotal} + ' Ft'">0 Ft</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="total-box p-4 mb-4 text-center">
+            <div class="small text-uppercase text-muted mb-1">Fizetendő összeg</div>
+            <div class="display-6 fw-bold text-dark" th:text="${order.totalAmount} + ' Ft'">0 Ft</div>
+          </div>
+
+          <div class="d-flex gap-2 flex-wrap">
+            <a th:href="@{/menu}" class="btn btn-soft-primary px-4 py-2">Vissza az étlapra</a>
+            <a th:href="@{/cart}" class="btn btn-soft-secondary px-4 py-2">Kosár megnyitása</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function formatHungarianPhone(raw) {
+    const value = (raw || '').replace(/[^\d+]/g, '');
+
+    if (value.startsWith('+36')) {
+      const digits = value.slice(3).replace(/\D/g, '');
+      if (digits.length < 9) return raw;
+      return '+36 ' + digits.slice(0, 2) + ' ' + digits.slice(2, 5) + ' ' + digits.slice(5, 9);
+    }
+
+    if (value.startsWith('06')) {
+      const digits = value.slice(2).replace(/\D/g, '');
+      if (digits.length < 9) return raw;
+      return '06 ' + digits.slice(0, 2) + ' ' + digits.slice(2, 5) + ' ' + digits.slice(5, 9);
+    }
+
+    return raw;
+  }
+
+  const phoneEl = document.getElementById('orderPhone');
+  if (phoneEl) {
+    phoneEl.textContent = formatHungarianPhone(phoneEl.textContent.trim());
+  }
+</script>
+</body>
+</html>
